@@ -1,0 +1,11 @@
+missing module named org - imported by pickle
+missing module named _subprocess - imported by subprocess
+missing module named msvcrt - imported by subprocess
+missing module named riscosenviron - imported by os
+missing module named riscospath - imported by os
+missing module named riscos - imported by os
+missing module named ce - imported by os
+missing module named _emx_link - imported by os
+missing module named os2 - imported by os
+missing module named nt - imported by os, ntpath
+missing module named 'org.python' - imported by copy
