@@ -1,1 +1,4 @@
 node_modules
+python/build
+python/dist
+python/func.spec
