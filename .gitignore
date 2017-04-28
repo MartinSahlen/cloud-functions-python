@@ -2,3 +2,7 @@ node_modules
 python/build
 python/dist
 python/func.spec
+python/venv
+python/linux-venv
+*.pyc
+.DS_Store
