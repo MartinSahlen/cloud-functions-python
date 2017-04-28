@@ -11,5 +11,4 @@ RUN ~/google-cloud-sdk/bin/gcloud -q components install kubectl
 
 # Install app dependencies
 RUN pip install --upgrade pip
-RUN pip install virtualenv #
-#RUN pip install pyinstaller
+RUN pip install virtualenv
