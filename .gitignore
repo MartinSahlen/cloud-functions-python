@@ -6,3 +6,4 @@ venv/
 linux-venv/
 *.pyc
 .DS_Store
+/*.egg-info

@@ -1,4 +1,0 @@
-boto
-google-cloud
-pyinstaller
-django
