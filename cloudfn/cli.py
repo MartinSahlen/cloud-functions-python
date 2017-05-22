@@ -2,6 +2,10 @@ import subprocess
 import os
 import sys
 
+'''
+Need to fail on non docker or gcloud or functions emulator
+'''
+
 
 def repo_root():
     return os.path.dirname(__file__) + '/../'
