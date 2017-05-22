@@ -6,6 +6,9 @@ import sys
 Need to fail on non docker or gcloud or functions emulator
 not existing. Give informative message.
 Customize docker container name?
+api: py-cloud-fn build <function_name> --production | -p (default --emulator | e) && gcloud beta functions deploy <function_name> ...
+super-light. Lighter than go-cloud-fn which is very hard wrapping
+target folder ignore.
 '''
 
 
