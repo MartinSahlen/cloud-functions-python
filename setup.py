@@ -12,7 +12,7 @@ setup(
         'console_scripts': ['py-cloud-fn=cloudfn.cli:main'],
     },
     install_requires=[
-        'pyinstaller',
+        'pyinstaller==3.2.1',
     ],
     include_package_data=True,
     packages=['cloudfn'],
