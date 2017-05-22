@@ -6,7 +6,8 @@ import sys
 Need to fail on non docker or gcloud or functions emulator
 not existing. Give informative message.
 Customize docker container name?
-api: py-cloud-fn build <function_name> --production | -p (default --emulator | e) && gcloud beta functions deploy <function_name> ...
+api: py-cloud-fn build <function_name> --production | -p (default --emulator | e)
+&& gcloud beta functions deploy <function_name> ...
 super-light. Lighter than go-cloud-fn which is very hard wrapping
 target folder ignore.
 '''
@@ -36,7 +37,7 @@ def build_for_production(file_name='main.py'):
         hooks_path()+':'+hooks_path(), image_name(), '/bin/sh', '-c',
         '\'cd app && (test -d pip-cache || virtualenv pip-cache) && ',
         '. pip-cache/bin/activate && '
-        'pip install -r requirements.txt && ' +
+        'test -f requirements.txt && pip install -r requirements.txt || echo "No requirements.txt present"  && ' +
         ' '.join(build_for_local(file_name)) + '\'',
     ]
 
