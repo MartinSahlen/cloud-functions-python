@@ -23,13 +23,14 @@ def build_for_production(file_name='main.py'):
         'docker', 'build', '-f', docker_path() + 'Dockerfile',
         '-t', image_name(), docker_path(), '&&', 'docker', 'run',
         '--rm', '-ti', '-v', '$(pwd):/app', image_name(), '/bin/sh', '-c',
-        'cd app && pyinstaller ' + file_name + ' -y -n func'
+        'cd app && virtualenv pip-cache && source ./pip-cache/bin/activate'
+        ' && pip install -r requirements.txt',
     ]
 
 
 def build_for_local(file_name='main.py'):
     return [
-        'pyinstaller', file_name, '-y', '-n', 'func',
+        'pyinstaller ', file_name, '-y', '-n', 'func',
         '--clean', '--onedir',
         '--additional-hooks-dir', hooks_path(),
         '--hidden-import', 'htmlentitydefs',
