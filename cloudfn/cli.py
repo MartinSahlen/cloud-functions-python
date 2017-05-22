@@ -4,6 +4,8 @@ import sys
 
 '''
 Need to fail on non docker or gcloud or functions emulator
+not existing. Give informative message.
+Customize docker container name?
 '''
 
 
