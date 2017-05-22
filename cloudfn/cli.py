@@ -2,7 +2,7 @@ import subprocess
 import os
 import sys
 import argparse
-
+from jinja2 import Template
 
 '''
 Need to fail on non docker or gcloud or functions emulator
@@ -33,6 +33,10 @@ def docker_path():
     return repo_root() + 'docker/'
 
 
+def output_name():
+    return 'func'
+
+
 def build_for_production(file_name='main.py'):
     return [
         'docker', 'build', '-f', docker_path() + 'Dockerfile',
@@ -49,7 +53,7 @@ def build_for_production(file_name='main.py'):
 
 def build_for_local(file_name='main.py'):
     return [
-        'pyinstaller ', file_name, '-y', '-n', 'func',
+        'pyinstaller ', file_name, '-y', '-n', output_name(),
         '--clean', '--onedir',
         '--additional-hooks-dir', hooks_path(),
         '--hidden-import', 'htmlentitydefs',
@@ -58,19 +62,35 @@ def build_for_local(file_name='main.py'):
     ]
 
 
-def build_cmd(filename='main.py', production=True):
+def build_cmd(file_name='main.py', production=False):
     if production:
-        return build_for_production(filename)
-    return buiod_for_local(filename)
+        return build_for_production(file_name=file_name)
+    return build_for_local(file_name=file_name)
 
 
-def build_function(function_name, file_name='main.py', local=True):
-    process = subprocess.Popen(
-        ' '.join(build_for_production()),
+def build_function(function_name, file_name='main.py', trigger_type='http',
+                   production=False):
+    exit_code = subprocess.call(
+        ' '.join(build_cmd(file_name=file_name, production=production)),
         stdout=sys.stdout,
         stdin=sys.stdin,
         shell=True)
-    output, error = process.communicate()
+    if exit_code == 0:
+        build_javascript(function_name, trigger_type=trigger_type)
+    sys.exit(exit_code)
+
+
+def build_javascript(function_name, trigger_type='http'):
+    js = open(repo_root() + 'template/index.js').read()
+    print js
+    t = Template(js)
+    rendered_js = t.render(config={
+            'output_name': output_name(),
+            'function_name': function_name,
+            'trigger_http': trigger_type == 'http',
+        }
+    )
+    open('index.js', 'w').write(rendered_js)
 
 
 def main():
@@ -79,8 +99,13 @@ def main():
         )
     parser.add_argument('function_name', type=str,
                         help='the name of your cloud function')
+    parser.add_argument('trigger_type', type=str,
+                        help='the trigger type of your cloud function',
+                        choices=['http', 'pubsub', 'bucket'])
     parser.add_argument('-p', '--production', action='store_true',
-                        help='Build the function for a production environment')
+                        help='Build function for production environment')
 
     args = parser.parse_args()
-    build_function(args.function_name, args.production)
+    build_function(args.function_name,
+                   production=args.production,
+                   trigger_type=args.trigger_type)

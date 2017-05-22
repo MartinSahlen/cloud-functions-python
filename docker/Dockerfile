@@ -8,3 +8,4 @@ RUN apt-get install -y curl
 # Install app dependencies
 RUN pip install --upgrade pip
 RUN pip install virtualenv
+RUN pip install pyinstaller

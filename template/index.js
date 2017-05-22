@@ -2,7 +2,7 @@
 function shimHandler(data) {
   return new Promise((resolve, reject) => {
     //Spawn the function and inject the env from the parent process.
-    const p = require('child_process').execFile('./{{.FunctionName}}', [], {
+    const p = require('child_process').execFile('./dist/{{config["output_name"]}}/{{config["output_name"]}}', [], {
       env: process.env,
     });
     var lastMessage;
@@ -78,14 +78,14 @@ function handleHttp(req, res) {
   })
 }
 
-//{{ if .TriggerHTTP }}
-exports['{{.FunctionName}}'] = function(req, res) {
+//{% if config["trigger_http"] %}
+exports['{{config["function_name"]}}'] = function(req, res) {
   return handleHttp(req, res);
-}// {{ else }}
-exports['{{.FunctionName}}'] = function(event, callback) {
+}//{% else %}
+exports['{{config["function_name"]}}'] = function(event, callback) {
   return shimHandler(event.data).then(function() {
     callback();
   }).catch(function() {
     callback(new Error("Function failed"));
   });
-}// {{ end }}
+}//{% endif %}
