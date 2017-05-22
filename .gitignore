@@ -1,8 +1,8 @@
 node_modules
-python/build
-python/dist
-python/func.spec
-python/venv
-python/linux-venv
+build/
+dist/
+func.spec
+venv/
+linux-venv/
 *.pyc
 .DS_Store
