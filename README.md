@@ -1,5 +1,5 @@
 # cloud-functions-python
-`go-cloud-fn` is a tool that allows you to write and deploy [Google cloud functions](https://cloud.google.com/functions/) in pure python.
+`py-cloud-fn` is a CLI tool that allows you to write and deploy [Google cloud functions](https://cloud.google.com/functions/) in pure python.
 
 Run `pip install python-cloud-functions` to get it.
 You need to have [Google cloud SDK](https://cloud.google.com/sdk/downloads) installed, as well as
