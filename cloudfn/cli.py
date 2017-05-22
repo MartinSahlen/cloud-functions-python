@@ -1,5 +1,6 @@
 import subprocess
 import os
+import sys
 
 
 def repo_root():
@@ -22,9 +23,12 @@ def build_for_production(file_name='main.py'):
     return [
         'docker', 'build', '-f', docker_path() + 'Dockerfile',
         '-t', image_name(), docker_path(), '&&', 'docker', 'run',
-        '--rm', '-ti', '-v', '$(pwd):/app', image_name(), '/bin/sh', '-c',
-        'cd app && virtualenv pip-cache && source ./pip-cache/bin/activate'
-        ' && pip install -r requirements.txt',
+        '--rm', '-ti', '-v', '$(pwd):/app', '-v',
+        hooks_path()+':'+hooks_path(), image_name(), '/bin/sh', '-c',
+        '\'cd app && (test -d pip-cache || virtualenv pip-cache) && ',
+        '. pip-cache/bin/activate && '
+        'pip install -r requirements.txt && ' +
+        ' '.join(build_for_local(file_name)) + '\'',
     ]
 
 
@@ -56,7 +60,8 @@ def build_cmd(filename='main.py', local=True):
 def main():
     process = subprocess.Popen(
         ' '.join(build_for_production()),
-        stdout=subprocess.PIPE,
+        stdout=sys.stdout,
+        stdin=sys.stdin,
         shell=True)
     output, error = process.communicate()
     print output
