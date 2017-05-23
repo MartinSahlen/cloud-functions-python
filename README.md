@@ -1,5 +1,7 @@
 [![PyPI version](https://badge.fury.io/py/pycloudfn.svg)](https://badge.fury.io/py/pycloudfn)
 
+[![PyPI](https://img.shields.io/pypi/dm/pycloudfn.svg)]()
+
 # cloud-functions-python
 `py-cloud-fn` is a CLI tool that allows you to write and deploy [Google cloud functions](https://cloud.google.com/functions/) in pure python.
 
