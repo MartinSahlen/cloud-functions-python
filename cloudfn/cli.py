@@ -43,7 +43,7 @@ def build_for_production(file_name='main.py'):
         '-t', image_name(), docker_path(), '&&', 'docker', 'run',
         '--rm', '-ti', '-v', '$(pwd):/app', '-v',
         hooks_path()+':'+hooks_path(), image_name(), '/bin/sh', '-c',
-        '\'cd app && (test -d pip-cache || virtualenv pip-cache) && ',
+        '\'cd app && test -d pip-cache || virtualenv pip-cache && ',
         '. pip-cache/bin/activate && '
         'test -f requirements.txt && pip install -r requirements.txt || echo '
         'No requirements.txt present  && ' +
