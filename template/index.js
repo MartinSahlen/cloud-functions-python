@@ -68,10 +68,10 @@ function handleHttp(req, res) {
 
   shimHandler(httpRequest)
   .then((result) => {
-    data = JSON.parse(result);
-    res.status(data.status_code);
-    res.set(data.headers)
-    res.send(data.body);
+    //data = JSON.parse(result);
+    res.status(200);
+    //res.set(data.headers)
+    res.send(result);
   })
   .catch(() => {
     res.status(500).end();
