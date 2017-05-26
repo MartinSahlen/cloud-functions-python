@@ -5,26 +5,26 @@ import argparse
 from jinja2 import Template
 
 '''
-Need to fail on non docker or gcloud or functions emulator
+Need to fail on non docker or gcloud
 not existing. Give informative message.
 Customize docker container name?
 
-py-cloud-fn build <function_name> --production | -p (default --emulator | e) \
-&& gcloud beta functions deploy <function_name> ...
+py-cloud-fn my-function http --production && \
+cd cloudfn/target && gcloud beta functions deploy my-function \
+--trigger-http --stage-bucket cloudfuncbucket --memory 2048MB && cd ../..
 
 super-light. Lighter than go-cloud-fn which is very hard wrapping
-target folder ignore.
 '''
 
 
-def repo_root():
+def package_root():
     return os.path.dirname(__file__) + '/'
 
 
 def hooks_path(production=False):
     if production:
         return 'pip-cache/lib/python2.7/site-packages/cloudfn/hooks'
-    return repo_root() + 'hooks'
+    return package_root() + 'hooks'
 
 
 def image_name():
@@ -32,7 +32,7 @@ def image_name():
 
 
 def docker_path():
-    return repo_root() + 'docker/'
+    return package_root() + 'docker/'
 
 
 def output_name():
@@ -62,15 +62,16 @@ def build(file_name='main.py', production=False):
         '--hidden-import', 'HTMLParser',
         '--hidden-import', 'Cookie',
     ]
-    '''
-    if os.path.isdir('../cloudfn-hooks'):
-        base.append('--additional-hooks-dir', '../cloudfn-hooks')
-    if os.path.isfile('../.hidden-imports'):
-        with open('../.hidden-imports') as f:
+    prefix = ''
+    if os.path.isdir(prefix + './cloudfn-hooks'):
+        base.append('--additional-hooks-dir')
+        base.append('../cloudfn-hooks')
+    if os.path.isfile(prefix + './.hidden-imports'):
+        with open(prefix + '.hidden-imports') as f:
             for line in f:
-                base.append('--hidden-import')
-                base.append('../'+line)
-    '''
+                if not f == '':
+                    base.append('--hidden-import')
+                    base.append(line.rstrip())
     if not production:
         base.insert(0, 'test -d cloudfn || mkdir cloudfn && cd cloudfn && ')
     return base
@@ -91,12 +92,13 @@ def build_function(function_name, file_name='main.py', trigger_type='http',
         shell=True)
     if exit_code == 0:
         build_javascript(function_name, trigger_type=trigger_type)
-    sys.exit(exit_code)
+    else:
+        sys.exit(exit_code)
+    sys.exit(cleanup())
 
 
 def build_javascript(function_name, trigger_type='http'):
-    js = open(repo_root() + 'template/index.js').read()
-    print js
+    js = open(package_root() + 'template/index.js').read()
     t = Template(js)
     rendered_js = t.render(config={
             'output_name': output_name(),
@@ -105,6 +107,13 @@ def build_javascript(function_name, trigger_type='http'):
         }
     )
     open('cloudfn/index.js', 'w').write(rendered_js)
+
+
+def cleanup():
+    return subprocess.call(
+        'cd cloudfn && rm -rf target && mkdir target && mv index.js target ' +
+        '&& mv dist target',
+        shell=True)
 
 
 def main():
