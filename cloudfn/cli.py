@@ -18,7 +18,7 @@ target folder ignore.
 
 
 def repo_root():
-    return os.path.dirname(__file__) + '/../'
+    return os.path.dirname(__file__) + '/'
 
 
 def hooks_path():
@@ -52,6 +52,8 @@ def build_for_production(file_name='main.py'):
 
 
 def build_for_local(file_name='main.py'):
+    print hooks_path()
+    print repo_root()
     base = [
         'pyinstaller ', file_name, '-y', '-n', output_name(),
         '--clean', '--onedir',

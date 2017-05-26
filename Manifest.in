@@ -1,0 +1,4 @@
+include README.md
+include cloudfn/docker/*
+include cloudfn/hooks/*
+include cloudfn/template/*
