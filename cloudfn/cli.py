@@ -23,7 +23,7 @@ def repo_root():
 
 def hooks_path(production=False):
     if production:
-        return 'cloudfn-pip-cache/lib/python2.7/site-packages/cloudfn/hooks'
+        return 'cloudfn/pip-cache/lib/python2.7/site-packages/cloudfn/hooks'
     return repo_root() + 'hooks'
 
 
@@ -44,30 +44,33 @@ def build_in_docker(file_name='main.py'):
         'docker', 'build', '-f', docker_path() + 'Dockerfile',
         '-t', image_name(), docker_path(), '&&', 'docker', 'run',
         '--rm', '-ti', '-v', '$(pwd):/app', image_name(), '/bin/sh', '-c',
-        '\'cd app && test -d cloudfn-pip-cache || virtualenv cloudfn-pip-cache'
-        ' && . cloudfn-pip-cache/bin/activate && '
-        'test -f requirements.txt && pip install -r requirements.txt || echo '
-        'No requirements.txt present  && ' +
+        '\'cd app && test -d cloudfn || mkdir cloudfn && cd cloudfn '
+        '&& test -d pip-cache || virtualenv pip-cache'
+        ' && . pip-cache/bin/activate && '
+        'test -f ../requirements.txt && pip install -r ../requirements.txt '
+        '|| echo "No requirements.txt present"  && '
         ' '.join(build(file_name, production=True)) + '\'',
     ]
 
 
 def build(file_name='main.py', production=False):
     base = [
-        'pyinstaller ', file_name, '-y', '-n', output_name(),
+        'pyinstaller ', '../' + file_name, '-y', '-n', output_name(),
         '--clean', '--onedir',
         '--additional-hooks-dir', hooks_path(production),
         '--hidden-import', 'htmlentitydefs',
         '--hidden-import', 'HTMLParser',
         '--hidden-import', 'Cookie',
     ]
-    if os.path.isdir('./hooks'):
-        # base.append('--additional-hooks-dir', 'hooks')
-        # add it to hooks
-        pass
-    if os.path.isfile('.hidden-imports'):
-        #  read in file line by line and add them
-        pass
+    if os.path.isdir('../cloudfn-hooks'):
+        base.append('--additional-hooks-dir', '../cloudfn-hooks')
+    if os.path.isfile('./.hidden-imports'):
+        with open('../.hidden-imports') as f:
+            for line in f:
+                base.append('--hidden-import')
+                base.append('../'+line)
+    if not production:
+        base.insert(0, 'test -d cloudfn || mkdir cloudfn && cd cloudfn')
     return base
 
 
@@ -113,8 +116,10 @@ def main():
                         choices=['http', 'pubsub', 'bucket'])
     parser.add_argument('-p', '--production', action='store_true',
                         help='Build function for production environment')
+    parser.add_argument('-f', '--file_name', type=str, default='main.py',
+                        help='The file name of the file you wish to build')
 
     args = parser.parse_args()
     build_function(args.function_name,
                    production=args.production,
-                   trigger_type=args.trigger_type)
+                   trigger_type=args.trigger_type, file_name=args.file_name)
