@@ -61,7 +61,8 @@ def build_for_local(file_name='main.py'):
         '--hidden-import', 'Cookie',
     ]
     if os.path.isdir('./hooks'):
-        base.append('--additional-hooks-dir', 'hooks')
+        # base.append('--additional-hooks-dir', 'hooks')
+        pass
     if os.path.isfile('.hidden-imports'):
         pass
     return base
