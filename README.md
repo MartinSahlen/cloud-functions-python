@@ -42,7 +42,7 @@ handle_http_event(handle_http)
 If you don't return anything, or return something different than a `cloudfn.http.Response` object, the function will return a `200 OK` with an empty body. The body can be either a string, list or dictionary, other values will be forced to a string.
 
 ### Handling a bucket event
-```
+```python
 from cloudfn.storage import handle_bucket_event
 import jsonpickle
 
@@ -55,7 +55,7 @@ handle_bucket_event(bucket_handler)
 ```
 
 ### Handling a pubsub message
-```
+```python
 from cloudfn.pubsub import handle_pubsub_event
 import jsonpickle
 
