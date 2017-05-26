@@ -28,7 +28,7 @@ from cloudfn.http import handle_http_event, Response
 
 
 def handle_http(req):
-    return Response(>
+      return Response(
         status_code=200,
         body={'key': 2},
         headers={'content-type': 'application/json'},
@@ -43,12 +43,28 @@ If you don't return anything, or return something different than a `cloudfn.http
 
 ### Handling a bucket event
 ```
-testing
+from cloudfn.storage import handle_bucket_event
+import jsonpickle
+
+
+def bucket_handler(obj):
+    print jsonpickle.encode(obj)
+
+
+handle_bucket_event(bucket_handler)
 ```
 
 ### Handling a pubsub message
 ```
-testing
+from cloudfn.pubsub import handle_pubsub_event
+import jsonpickle
+
+
+def pubsub_handler(message):
+    print jsonpickle.encode(message)
+
+
+handle_pubsub_event(pubsub_handler)
 ```
 
 ## Deploying a function
