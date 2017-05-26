@@ -52,7 +52,7 @@ def build_for_production(file_name='main.py'):
 
 
 def build_for_local(file_name='main.py'):
-    return [
+    base = [
         'pyinstaller ', file_name, '-y', '-n', output_name(),
         '--clean', '--onedir',
         '--additional-hooks-dir', hooks_path(),
@@ -60,6 +60,11 @@ def build_for_local(file_name='main.py'):
         '--hidden-import', 'HTMLParser',
         '--hidden-import', 'Cookie',
     ]
+    if os.path.isdir('./hooks'):
+        base.append('--additional-hooks-dir', 'hooks')
+    if os.path.isfile('.hidden-imports'):
+        pass
+    return base
 
 
 def build_cmd(file_name='main.py', production=False):
