@@ -23,7 +23,7 @@ def repo_root():
 
 def hooks_path(production=False):
     if production:
-        return 'cloudfn/pip-cache/lib/python2.7/site-packages/cloudfn/hooks'
+        return 'pip-cache/lib/python2.7/site-packages/cloudfn/hooks'
     return repo_root() + 'hooks'
 
 
@@ -45,32 +45,34 @@ def build_in_docker(file_name='main.py'):
         '-t', image_name(), docker_path(), '&&', 'docker', 'run',
         '--rm', '-ti', '-v', '$(pwd):/app', image_name(), '/bin/sh', '-c',
         '\'cd app && test -d cloudfn || mkdir cloudfn && cd cloudfn '
-        '&& test -d pip-cache || virtualenv pip-cache'
-        ' && . pip-cache/bin/activate && '
-        'test -f ../requirements.txt && pip install -r ../requirements.txt '
-        '|| echo "No requirements.txt present"  && '
+        '&& test -d pip-cache || virtualenv pip-cache ' +
+        '&& . pip-cache/bin/activate && ' +
+        'test -f ../requirements.txt && pip install -r ../requirements.txt ' +
+        '|| echo no requirements.txt present && ' +
         ' '.join(build(file_name, production=True)) + '\'',
     ]
 
 
 def build(file_name='main.py', production=False):
     base = [
-        'pyinstaller ', '../' + file_name, '-y', '-n', output_name(),
+        'pyinstaller', '../' + file_name, '-y', '-n', output_name(),
         '--clean', '--onedir',
-        '--additional-hooks-dir', hooks_path(production),
+        '--additional-hooks-dir', hooks_path(production=production),
         '--hidden-import', 'htmlentitydefs',
         '--hidden-import', 'HTMLParser',
         '--hidden-import', 'Cookie',
     ]
+    '''
     if os.path.isdir('../cloudfn-hooks'):
         base.append('--additional-hooks-dir', '../cloudfn-hooks')
-    if os.path.isfile('./.hidden-imports'):
+    if os.path.isfile('../.hidden-imports'):
         with open('../.hidden-imports') as f:
             for line in f:
                 base.append('--hidden-import')
                 base.append('../'+line)
+    '''
     if not production:
-        base.insert(0, 'test -d cloudfn || mkdir cloudfn && cd cloudfn')
+        base.insert(0, 'test -d cloudfn || mkdir cloudfn && cd cloudfn && ')
     return base
 
 
@@ -102,7 +104,7 @@ def build_javascript(function_name, trigger_type='http'):
             'trigger_http': trigger_type == 'http',
         }
     )
-    open('index.js', 'w').write(rendered_js)
+    open('cloudfn/index.js', 'w').write(rendered_js)
 
 
 def main():
