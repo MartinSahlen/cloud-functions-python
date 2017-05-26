@@ -78,10 +78,28 @@ handle_pubsub_event(pubsub_handler)
 ## Deploying a function
 I have previously built [go-cloud-fn](https://github.com/MartinSahlen/go-cloud-fn/), in which there is a complete CLI available for you to deploy a function. I did not want to go there now, but rather be concerned about `building` the function and be super light weight. Deploying a function can be done like this:
 
+### HTTP
+
 ```sh
 py-cloud-fn my-function http --production && \
 cd cloudfn/target && gcloud beta functions deploy my-function \
 --trigger-http --stage-bucket <bucket> && cd ../..
+```
+
+### Storage
+
+```sh
+py-cloud-fn  my-bucket-function bucket -p && cd cloudfn/target && \
+gcloud beta functions deploy my-bucket-function --trigger-bucket \
+<trigger-bucket> --stage-bucket <stage-bucket> && cd ../..
+```
+
+### Pubsub
+
+```sh
+py-cloud-fn my-topic-function bucket -p && cd cloudfn/target && \
+gcloud beta functions deploy my-topic-function --trigger-topic <topic> \
+--stage-bucket <bucket> && cd ../..
 ```
 
 
