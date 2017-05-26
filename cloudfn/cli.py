@@ -21,7 +21,9 @@ def repo_root():
     return os.path.dirname(__file__) + '/'
 
 
-def hooks_path():
+def hooks_path(production=False):
+    if production:
+        return 'cloudfn-pip-cache/lib/python2.7/site-packages/cloudfn/hooks'
     return repo_root() + 'hooks'
 
 
@@ -37,43 +39,42 @@ def output_name():
     return 'func'
 
 
-def build_for_production(file_name='main.py'):
+def build_in_docker(file_name='main.py'):
     return [
         'docker', 'build', '-f', docker_path() + 'Dockerfile',
         '-t', image_name(), docker_path(), '&&', 'docker', 'run',
-        '--rm', '-ti', '-v', '$(pwd):/app', '-v',
-        hooks_path()+':'+hooks_path(), image_name(), '/bin/sh', '-c',
-        '\'cd app && test -d pip-cache || virtualenv pip-cache && ',
-        '. pip-cache/bin/activate && '
+        '--rm', '-ti', '-v', '$(pwd):/app', image_name(), '/bin/sh', '-c',
+        '\'cd app && test -d cloudfn-pip-cache || virtualenv cloudfn-pip-cache'
+        ' && . cloudfn-pip-cache/bin/activate && '
         'test -f requirements.txt && pip install -r requirements.txt || echo '
         'No requirements.txt present  && ' +
-        ' '.join(build_for_local(file_name)) + '\'',
+        ' '.join(build(file_name, production=True)) + '\'',
     ]
 
 
-def build_for_local(file_name='main.py'):
-    print hooks_path()
-    print repo_root()
+def build(file_name='main.py', production=False):
     base = [
         'pyinstaller ', file_name, '-y', '-n', output_name(),
         '--clean', '--onedir',
-        '--additional-hooks-dir', hooks_path(),
+        '--additional-hooks-dir', hooks_path(production),
         '--hidden-import', 'htmlentitydefs',
         '--hidden-import', 'HTMLParser',
         '--hidden-import', 'Cookie',
     ]
     if os.path.isdir('./hooks'):
         # base.append('--additional-hooks-dir', 'hooks')
+        # add it to hooks
         pass
     if os.path.isfile('.hidden-imports'):
+        #  read in file line by line and add them
         pass
     return base
 
 
 def build_cmd(file_name='main.py', production=False):
     if production:
-        return build_for_production(file_name=file_name)
-    return build_for_local(file_name=file_name)
+        return build_in_docker(file_name=file_name)
+    return build(file_name=file_name)
 
 
 def build_function(function_name, file_name='main.py', trigger_type='http',
