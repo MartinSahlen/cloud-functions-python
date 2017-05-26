@@ -106,6 +106,11 @@ gcloud beta functions deploy my-topic-function --trigger-topic <topic> \
 --stage-bucket <bucket> && cd ../..
 ```
 
+### Adding support for packages that doesnt work
+
+- See the output from build
+- add a line-delimited file for **hidden imports** and a folder called **cloudfn-hooks**
+in the root of your repo, see more at [Pyinstaller](https://pyinstaller.readthedocs.io/en/stable/hooks.html) for how it works
 
 ## License
 
