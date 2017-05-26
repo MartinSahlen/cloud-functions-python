@@ -1,6 +1,17 @@
 import sys
 import json
+from dateutil.parser import parse
+
+
+class Message:
+    def __init__(self, raw_json):
+        self.data = raw_json.get('data', None),
+        self.message_id = raw_json('messageId', None)
+        self.attributes = raw_json('attributes', None),
+        self.publish_time = raw_json('publishTime', None)
+        if self.publish_time is not None:
+            self.publish_time = parse(self.publish_time)
 
 
 def handle_pubsub_event(handle_fn):
-    return sys.stdout.write(handle_fn(json.loads(sys.stdin.read())))
+    handle_fn(Message(json.loads(sys.stdin.read())))

@@ -14,6 +14,7 @@ setup(
     install_requires=[
         'pyinstaller==3.2.1',
         'Jinja2==2.9.6',
+        'python-dateutil==2.6.0',
     ],
     include_package_data=True,
     packages=['cloudfn'],
