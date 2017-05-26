@@ -23,6 +23,10 @@ Run with `-h` to get some guidance on options. The library will assume that you 
 The library will create a `cloudfn` folder wherever it is used, which can safely be put in `.gitignore`. It contains build files and cache for python packages.
 
 ### Handling a http request
+
+look at the [Request](https://github.com/MartinSahlen/cloud-functions-python/blob/master/cloudfn/http.py)
+object for the structure
+
 ```python
 from cloudfn.http import handle_http_event, Response
 
