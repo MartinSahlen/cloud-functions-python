@@ -22,6 +22,10 @@ Run with `-h` to get some guidance on options. The library will assume that you 
 
 The library will create a `cloudfn` folder wherever it is used, which can safely be put in `.gitignore`. It contains build files and cache for python packages.
 
+## Dependencies
+This library works with [pip](https://pypi.python.org/pypi) OOTB. Just add your `requirements.txt` file in the root
+of the repo and you are golden. It obviously needs `pycloudfn` to be present.
+
 ### Handling a http request
 
 look at the [Request](https://github.com/MartinSahlen/cloud-functions-python/blob/master/cloudfn/http.py)
