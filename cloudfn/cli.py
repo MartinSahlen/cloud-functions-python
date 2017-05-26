@@ -4,18 +4,6 @@ import sys
 import argparse
 from jinja2 import Template
 
-'''
-Need to fail on non docker or gcloud
-not existing. Give informative message.
-Customize docker container name?
-
-py-cloud-fn my-function http --production && \
-cd cloudfn/target && gcloud beta functions deploy my-function \
---trigger-http --stage-bucket cloudfuncbucket --memory 2048MB && cd ../..
-
-super-light. Lighter than go-cloud-fn which is very hard wrapping
-'''
-
 
 def package_root():
     return os.path.dirname(__file__) + '/'
