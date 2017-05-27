@@ -4,6 +4,9 @@ import sys
 from urlparse import urlparse
 from io import StringIO
 
+# http://werkzeug.pocoo.org/docs/0.12/test/#werkzeug.test.EnvironBuilder
+# to build the full request
+
 
 def handle_http_event(app):
     req_json = json.loads(sys.stdin.read())
@@ -15,7 +18,7 @@ def handle_http_event(app):
     body = StringIO(req_json.get('body', u''))
 
     with app.test_request_context(
-            path=path, input_stream=body):
+            path=path, input_stream=body, method=req_json['method']):
         resp = app.full_dispatch_request()
         body = resp.get_data()
         try:
