@@ -11,6 +11,7 @@ from werkzeug.datastructures import Headers
 
 def handle_http_event(app):
     req_json = json.loads(sys.stdin.read())
+    sys.stdout.write(json.dumps(req_json))
     c = urlparse(req_json['url'])
     path = c.path
     if path == '':
