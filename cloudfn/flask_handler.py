@@ -21,15 +21,15 @@ def handle_http_event(app):
     req_headers = req_json.get('headers', None)
     h = Headers()
     if req_headers is not None:
-        for key, value in req_headers:
+        for key, value in req_headers.iteritems():
             h.add(key, value)
 
     with app.test_request_context(
             path=path,
             input_stream=body,
-            method=req_json['method'],
+            method=req_json.get('method', 'GET'),
             headers=h,
-            query=c.query):
+            query_string=c.query):
         resp = app.full_dispatch_request()
         body = resp.get_data()
         try:
