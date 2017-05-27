@@ -49,6 +49,31 @@ handle_http_event(handle_http)
 
 If you don't return anything, or return something different than a `cloudfn.http.Response` object, the function will return a `200 OK` with an empty body. The body can be either a string, list or dictionary, other values will be forced to a string.
 
+### Handling http with Flask
+
+[Flask](http://flask.pocoo.org/) is a great framework for building microservices.
+The library supports flask OOTB, just like this:
+
+```python
+from cloudfn.flask_handler import handle_http_event
+from flask import Flask
+from flask.json import jsonify
+app = Flask(__name__)
+
+
+@app.route("/")
+def hello():
+    return jsonify(message='Hello world!'), 201
+
+
+@app.route("/lol")
+def helloLol():
+    return "Hello lol!"
+
+
+handle_http_event(app)
+```
+
 ### Handling a bucket event
 
 look at the [Object](https://github.com/MartinSahlen/cloud-functions-python/blob/master/cloudfn/storage.py)
