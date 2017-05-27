@@ -3,6 +3,7 @@ import json
 import sys
 from urlparse import urlparse
 from io import StringIO
+from werkzeug.datastructures import Headers
 
 # http://werkzeug.pocoo.org/docs/0.12/test/#werkzeug.test.EnvironBuilder
 # to build the full request
@@ -17,8 +18,18 @@ def handle_http_event(app):
 
     body = StringIO(req_json.get('body', u''))
 
+    req_headers = req_json.get('headers', None)
+    h = Headers()
+    if req_headers is not None:
+        for key, value in req_headers:
+            h.add(key, value)
+
     with app.test_request_context(
-            path=path, input_stream=body, method=req_json['method']):
+            path=path,
+            input_stream=body,
+            method=req_json['method'],
+            headers=h,
+            query=c.query):
         resp = app.full_dispatch_request()
         body = resp.get_data()
         try:
