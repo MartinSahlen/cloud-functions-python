@@ -7,3 +7,4 @@ linux-venv/
 *.pyc
 .DS_Store
 /*.egg-info
+examples/*/cloudfn/

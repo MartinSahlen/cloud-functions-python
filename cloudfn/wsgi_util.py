@@ -1,6 +1,6 @@
 from urlparse import urlparse
 import sys
-from io import StringIO
+from io import BytesIO
 
 
 def wsgi(raw_json):
@@ -12,6 +12,9 @@ def wsgi(raw_json):
     if port is None:
         # We'll just leet it go
         port = 1337
+
+    buf = bytearray(raw_json.get('body', u''), 'utf-8')
+
     environ = {
         'PATH_INFO': path,
         'QUERY_STRING': components.query,
@@ -20,8 +23,9 @@ def wsgi(raw_json):
         'SERVER_PORT': port,
         'SERVER_PROTOCOL': 'HTTP/1.1',
         'SERVER_SOFTWARE': 'CloudFunctions/1.0',
+        'CONTENT_LENGTH': len(buf),
         'wsgi.errors': sys.stderr,
-        'wsgi.input': StringIO(raw_json.get('body', u'')),
+        'wsgi.input': BytesIO(buf),
         'wsgi.multiprocess': False,
         'wsgi.multithread': False,
         'wsgi.run_once': False,

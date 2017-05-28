@@ -52,7 +52,10 @@ If you don't return anything, or return something different than a `cloudfn.http
 ### Handling http with Flask
 
 [Flask](http://flask.pocoo.org/) is a great framework for building microservices.
-The library supports flask OOTB, just like this:
+The library supports flask OOTB. If you need to have some routing / parsing and
+verification logic in place, flask might be a good fit! Have a look at the
+[example](https://github.com/MartinSahlen/cloud-functions-python/tree/master/examples/flask)
+to see how easy it is!
 
 ```python
 from cloudfn.flask_handler import handle_http_event
@@ -72,9 +75,27 @@ def helloLol():
 
 
 handle_http_event(app)
+```
+
+### Handling http with Django
+
+[Django](https://www.djangoproject.com/) is a great framework for building microservices.
+The library supports django OOTB. Assuming you have setup your django application in a
+normal fashion, this should be what you need. You need to setup a pretty minimal django
+application (no database etc) to get it working. It might be a little overkill to squeeze
+django into a cloud function, but there are some pretty nice features for doing request
+verification and routing in django using for intance
+[django rest framework](http://www.django-rest-framework.org/).
+
+See the [example](https://github.com/MartinSahlen/cloud-functions-python/tree/master/examples/django)
+for how you can handle a http request using django.
+
+```python
+from cloudfn.django_handler import handle_http_event
+from mysite.wsgi import application
 
 
-handle_http_event(app)
+handle_http_event(application)
 ```
 
 ### Handling a bucket event
