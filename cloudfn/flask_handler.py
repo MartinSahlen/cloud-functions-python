@@ -1,9 +1,12 @@
-# from wsgi_util import wsgi
 import json
 import sys
-from urlparse import urlparse
 from io import StringIO
+
+import six
+from six.moves.urllib_parse import urlparse
 from werkzeug.datastructures import Headers
+
+# from .wsgi_util import wsgi
 
 
 def handle_http_event(app):
@@ -18,7 +21,7 @@ def handle_http_event(app):
     req_headers = req_json.get('headers', None)
     h = Headers()
     if req_headers is not None:
-        for key, value in req_headers.iteritems():
+        for key, value in six.iteritems(req_headers):
             h.add(key, value)
 
     with app.test_request_context(
@@ -37,7 +40,7 @@ def handle_http_event(app):
         headers = {}
         for header in resp.headers:
             if header[0] in headers:
-                headers[header[0]] = headers[header[0]] + ', ' + header[1]
+                headers[header[0]] += ', ' + header[1]
             else:
                 headers[header[0]] = header[1]
 

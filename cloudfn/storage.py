@@ -1,52 +1,39 @@
-import sys
 import json
+import sys
+
 from dateutil.parser import parse
 
 
+def _update_attributes(obj, d, keys, default=None):
+    """Updates the attributes of `obj` with keys from `d` in camelCase. """
+    for key in keys:
+        parts = key.split('_')
+        camel_case = parts[0] + ''.join(map(str.title, parts[1:]))
+        setattr(obj, key, d.get(camel_case, default))
+
+
 class ACL:
+    __ATTRIBUTES = (
+        'kind', 'id', 'self_link', 'bucket', 'object', 'generation', 'entity',
+        'role', 'email', 'entity_id', 'domain', 'project_team', 'etag'
+    )
+
     def __init__(self, raw_json):
-        self.kind = raw_json.get('kind', None)
-        self.id = raw_json.get('id', None)
-        self.self_link = raw_json.get('selfLink', None)
-        self.bucket = raw_json.get('bucket', None)
-        self.object = raw_json.get('object', None)
-        self.generation = raw_json.get('generation', None)
-        self.entity = raw_json.get('entity', None)
-        self.role = raw_json.get('role', None)
-        self.email = raw_json.get('email', None)
-        self.entity_id = raw_json.get('entityId', None)
-        self.domain = raw_json.get('domain', None)
-        self.project_team = raw_json.get('projectTeam', None)
-        self.etag = raw_json.get('etag', None)
+        _update_attributes(self, raw_json, self.__ATTRIBUTES)
 
 
 class Object:
+    __ATTRIBUTES = (
+        'kind', 'id', 'self_link', 'bucket', 'object', 'generation',
+        'metageneration', 'content_type', 'time_created', 'updated',
+        'time_deleted', 'storage_class', 'time_storage_class_updated', 'size',
+        'md5_hash', 'media_link', 'content_encoding', 'content_disposition',
+        'content_language', 'cache_control', 'metadata', 'owner', 'crc32c',
+        'component_count', 'customer_encryption'
+    )
+
     def __init__(self, raw_json):
-        self.kind = raw_json.get('kind', None)
-        self.id = raw_json.get('id', None)
-        self.self_link = raw_json.get('selfLink', None)
-        self.bucket = raw_json.get('bucket', None)
-        self.generation = raw_json.get('generation', None)
-        self.metageneration = raw_json.get('metageneration', None)
-        self.content_type = raw_json.get('contentType', None)
-        self.time_created = raw_json.get('timeCreated', None)
-        self.updated = raw_json.get('updated', None)
-        self.time_deleted = raw_json.get('timeDeleted', None)
-        self.storage_class = raw_json.get('storageClass', None)
-        self.time_storage_class_updated = \
-            raw_json.get('timeStorageClassUpdated', None)
-        self.size = raw_json.get('size', None)
-        self.md5_hash = raw_json.get('md5_hash', None)
-        self.media_link = raw_json.get('mediaLink', None)
-        self.content_encoding = raw_json.get('contentEncoding', None)
-        self.content_disposition = raw_json.get('contentDisposition', None)
-        self.content_language = raw_json.get('contentLanguage', None)
-        self.cache_control = raw_json.get('cacheControl', None)
-        self.metadata = raw_json.get('metadata', None)
-        self.owner = raw_json.get('owner', None)
-        self.crc32c = raw_json.get('crc32c', None)
-        self.component_count = raw_json.get('componentCount', None)
-        self.customer_encryption = raw_json.get('customerEncryption', None)
+        _update_attributes(self, raw_json, self.__ATTRIBUTES)
 
         if self.time_created is not None:
             self.time_created = parse(self.time_created)
@@ -58,12 +45,7 @@ class Object:
             self.time_storage_class_updated = \
                 parse(self.time_storage_class_updated)
 
-        self.acl = []
-        acl = raw_json.get('acl', None)
-
-        if acl is not None:
-            for a in acl:
-                self.acl.append(ACL(a))
+        self.acl = list(map(ACL, raw_json.get('acl') or []))
 
 
 def handle_bucket_event(handle_fn):
