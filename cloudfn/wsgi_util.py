@@ -8,12 +8,16 @@ def wsgi(raw_json):
     path = components.path
     if path == '':
         path = '/'
+    port = components.port
+    if port is None:
+        # We'll just leet it go
+        port = 1337
     environ = {
         'PATH_INFO': path,
         'QUERY_STRING': components.query,
         'REQUEST_METHOD': raw_json['method'],
         'SERVER_NAME': components.hostname,
-        'SERVER_PORT': components.port,
+        'SERVER_PORT': port,
         'SERVER_PROTOCOL': 'HTTP/1.1',
         'SERVER_SOFTWARE': 'CloudFunctions/1.0',
         'wsgi.errors': sys.stderr,
