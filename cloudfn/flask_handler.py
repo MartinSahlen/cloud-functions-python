@@ -5,7 +5,8 @@ from io import StringIO
 import six
 from six.moves.urllib_parse import urlparse
 from werkzeug.datastructures import Headers
-# from wsgi_util import wsgi
+
+# from .wsgi_util import wsgi
 
 
 def handle_http_event(app):

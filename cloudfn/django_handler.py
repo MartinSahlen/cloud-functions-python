@@ -3,7 +3,7 @@ import sys
 
 from django.core.handlers.wsgi import WSGIRequest
 
-from wsgi_util import wsgi
+from .wsgi_util import wsgi
 
 
 def handle_http_event(app):
