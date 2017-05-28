@@ -1,3 +1,5 @@
+[![PyPI version](https://badge.fury.io/py/pycloudfn.svg)](https://badge.fury.io/py/pycloudfn)
+
 # cloud-functions-python
 `py-cloud-fn` is a CLI tool that allows you to write and deploy [Google cloud functions](https://cloud.google.com/functions/) in pure python. No javascript allowed!
 The goal of this library is to be able to let developers write light weight functions
@@ -10,12 +12,8 @@ jsonpickle==0.9.4
 ```
 
 as you normally would when building any python application. When building (for production), the library
-will pick this file and make sure to install the dependencies. It will do so while caching all dependencies
+will pick up this file and make sure to install the dependencies. It will do so while caching all dependencies
 in a [virtual environment](https://virtualenv.pypa.io/en/stable/), to speed up subsequent builds.
-
-[![PyPI version](https://badge.fury.io/py/pycloudfn.svg)](https://badge.fury.io/py/pycloudfn)
-
-[![PyPI](https://img.shields.io/pypi/dm/pycloudfn.svg)]()
 
 Run `pip install pycloudfn` to get it.
 You need to have [Google cloud SDK](https://cloud.google.com/sdk/downloads) installed, as well as
