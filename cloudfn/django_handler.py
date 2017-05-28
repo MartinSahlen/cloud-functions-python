@@ -9,12 +9,20 @@ def handle_http_event(app):
     app.load_middleware()
     resp = app.get_response(WSGIRequest(environ))
 
-    # handle streaming vs non streaming
+    body = ''
     if resp.streaming:
-        pass
+        for content in resp.streaming_content:
+            body += content
+    else:
+        body = resp.content.decode('utf-8')
+
+    headers = {}
+    for header in resp.items():
+        headers[header[0]] = header[1]
+    resp.close()
 
     sys.stdout.write(json.dumps({
-        'body': 'body',
+        'body': body,
         'status_code': resp.status_code,
-        'headers': {},
+        'headers': headers,
     }))
