@@ -27,6 +27,13 @@ def output_name():
     return 'func'
 
 
+def get_django_settings():
+    m = os.environ.get('DJANGO_SETTINGS_MODULE', '')
+    if m == '':
+        return m
+    return 'DJANGO_SETTINGS_MODULE='+m
+
+
 def build_in_docker(file_name='main.py'):
     return [
         'docker', 'build', '-f', docker_path() + 'Dockerfile',
@@ -37,6 +44,7 @@ def build_in_docker(file_name='main.py'):
         '&& . pip-cache/bin/activate && ' +
         'test -f ../requirements.txt && pip install -r ../requirements.txt ' +
         '|| echo no requirements.txt present && ' +
+        get_django_settings() + ' ' +
         ' '.join(build(file_name, production=True)) + '\'',
     ]
 
