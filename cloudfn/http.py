@@ -1,6 +1,8 @@
-import sys
 import json
-from urlparse import urlparse
+import sys
+
+import six
+from six.moves.urllib_parse import urlparse
 
 
 class Request:
@@ -23,13 +25,12 @@ class Request:
 
 
 class Response:
-    def __init__(self, headers={}, body='', status_code=200):
-        self.headers = headers
-        self.body = body
-        if not isinstance(self.body, basestring) \
-                and not isinstance(self.body, dict) \
-                and not isinstance(self.body, list):
-            self.body = str(self.body)
+    def __init__(self, headers=None, body='', status_code=200):
+        self.headers = {} if headers is None else headers
+        if isinstance(body, (six.text_type, six.binary_type, dict, list)):
+            self.body = body
+        else:
+            self.body = str(body)
         self.status_code = status_code
 
     def _json_string(self):

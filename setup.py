@@ -20,6 +20,7 @@ setup(
         'python-dateutil==2.6.0',
         'werkzeug==0.12',
         'django==1.11.1',
+        'six==1.10.0'
     ],
     include_package_data=True,
     packages=['cloudfn'],

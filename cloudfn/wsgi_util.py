@@ -1,6 +1,8 @@
-from urlparse import urlparse
 import sys
 from io import BytesIO
+
+import six
+from six.moves.urllib_parse import urlparse
 
 
 def wsgi(raw_json):
@@ -34,6 +36,6 @@ def wsgi(raw_json):
     }
     headers = raw_json.get('headers', None)
     if headers is not None:
-        for key, value in headers.iteritems():
+        for key, value in six.iteritems(headers):
             environ['HTTP_' + key.replace('-', '_').upper()] = value
     return environ
