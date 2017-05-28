@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='pycloudfn',
-    version='0.1.115',
+    version='0.1.116',
     description='GCP Cloud functions in python',
     url='https://github.com/MartinSahlen/cloud-functions-python',
     author='Martin Sahlen',
@@ -11,6 +11,9 @@ setup(
     entry_points={
         'console_scripts': ['py-cloud-fn=cloudfn.cli:main'],
     },
+    classifiers=[
+        'Development Status :: 3 - Alpha',
+    ],
     install_requires=[
         'pyinstaller==3.2.1',
         'Jinja2==2.9.6',
