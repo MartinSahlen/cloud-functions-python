@@ -5,13 +5,9 @@ from urlparse import urlparse
 from io import StringIO
 from werkzeug.datastructures import Headers
 
-# http://werkzeug.pocoo.org/docs/0.12/test/#werkzeug.test.EnvironBuilder
-# to build the full request
-
 
 def handle_http_event(app):
     req_json = json.loads(sys.stdin.read())
-    sys.stdout.write(json.dumps(req_json))
     c = urlparse(req_json['url'])
     path = c.path
     if path == '':

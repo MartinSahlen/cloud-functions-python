@@ -56,19 +56,22 @@ The library supports flask OOTB, just like this:
 
 ```python
 from cloudfn.flask_handler import handle_http_event
-from flask import Flask
+from flask import Flask, request
 from flask.json import jsonify
 app = Flask(__name__)
 
 
-@app.route("/")
+@app.route('/',  methods=['POST', 'GET'])
 def hello():
-    return jsonify(message='Hello world!'), 201
+    return jsonify(message='Hello world!', json=request.get_json()), 201
 
 
-@app.route("/lol")
+@app.route('/lol')
 def helloLol():
-    return "Hello lol!"
+    return 'Hello lol!'
+
+
+handle_http_event(app)
 
 
 handle_http_event(app)

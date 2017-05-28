@@ -6,6 +6,6 @@ RUN apt-get install -y python-pip
 RUN apt-get install -y curl
 
 # Install app dependencies
-RUN pip install --upgrade pip
-RUN pip install virtualenv
-RUN pip install pyinstaller
+RUN pip install pip==9.0.1
+RUN pip install virtualenv==15.1.0
+RUN pip install pyinstaller==3.2.1

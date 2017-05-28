@@ -46,6 +46,7 @@ def build(file_name='main.py', production=False):
         'pyinstaller', '../' + file_name, '-y', '-n', output_name(),
         '--clean', '--onedir',
         '--additional-hooks-dir', hooks_path(production=production),
+        '--runtime-hook', hooks_path(production=production) + '/unbuffered.py',
         '--hidden-import', 'htmlentitydefs',
         '--hidden-import', 'HTMLParser',
         '--hidden-import', 'Cookie',

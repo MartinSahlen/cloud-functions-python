@@ -2,10 +2,8 @@
 function shimHandler(data) {
   return new Promise((resolve, reject) => {
     //Spawn the function and inject the env from the parent process.
-    const env = process.env;
-    env['PYTHONUNBUFFERED'] = 'PYTHONUNBUFFERED';
-    const p = require('child_process').execFile('./dist/{{config["output_name"]}}/{{config["output_name"]}}', [], {
-      env: env,
+    const p = require('child_process').execFile('./dist/{{config["output_name"]}}/{{config["output_name"]}}', {
+      env: process.env,
     });
     var lastMessage;
     p.stdin.setEncoding('utf-8');
@@ -37,7 +35,6 @@ function shimHandler(data) {
 //Handle http request
 function handleHttp(req, res) {
   var requestBody;
-
   switch (req.get('content-type')) {
     case 'application/json':
       requestBody = JSON.stringify(req.body);
