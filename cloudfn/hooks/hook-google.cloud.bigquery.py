@@ -1,3 +1,4 @@
 from PyInstaller.utils.hooks import copy_metadata
 
-datas = copy_metadata('grpcio')
+datas = copy_metadata('google-cloud-bigquery')
+datas += copy_metadata('google-cloud-core')
