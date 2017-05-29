@@ -9,14 +9,23 @@ def package_root():
     return os.path.dirname(__file__) + '/'
 
 
-def hooks_path(production=False):
+def hooks_path(python_version, production):
     if production:
-        return 'pip-cache/lib/python2.7/site-packages/cloudfn/hooks'
+        if python_version == 3:
+            return cache_dir(python_version) + \
+                '/lib/python3.5/site-packages/cloudfn/hooks'
+        if python_version == 2:
+            return cache_dir(python_version) + \
+                '/lib/python2.7/site-packages/cloudfn/hooks'
     return package_root() + 'hooks'
 
 
-def image_name():
-    return 'pycloudfn-builder'
+def cache_dir(python_version):
+    return 'pip-cache-' + str(python_version)
+
+
+def image_name(python_version):
+    return 'pycloudfn-builder' + str(python_version)
 
 
 def docker_path():
@@ -34,27 +43,38 @@ def get_django_settings():
     return 'DJANGO_SETTINGS_MODULE='+m
 
 
-def build_in_docker(file_name='main.py'):
+def dockerfile(python_version):
+    if python_version == 2:
+        return 'DockerfilePython2'
+    if python_version == 3:
+        return 'DockerfilePython3'
+    raise Exception('Python version not supported: ' + str(python_version))
+
+
+def build_in_docker(file_name, python_version):
     return [
-        'docker', 'build', '-f', docker_path() + 'Dockerfile',
-        '-t', image_name(), docker_path(), '&&', 'docker', 'run',
-        '--rm', '-ti', '-v', '$(pwd):/app', image_name(), '/bin/sh', '-c',
+        'docker', 'build', '-f', docker_path() + dockerfile(python_version),
+        '-t', image_name(python_version), docker_path(), '&&', 'docker', 'run',
+        '--rm', '-ti', '-v', '$(pwd):/app', image_name(python_version),
+        '/bin/sh', '-c',
         '\'cd app && test -d cloudfn || mkdir cloudfn && cd cloudfn '
-        '&& test -d pip-cache || virtualenv pip-cache ' +
-        '&& . pip-cache/bin/activate && ' +
+        '&& test -d ' + cache_dir(python_version) + ' || virtualenv ' +
+        cache_dir(python_version) + ' ' +
+        '&& . ' + cache_dir(python_version) + '/bin/activate && ' +
         'test -f ../requirements.txt && pip install -r ../requirements.txt ' +
         '|| echo no requirements.txt present && ' +
         get_django_settings() + ' ' +
-        ' '.join(build(file_name, production=True)) + '\'',
+        ' '.join(build(file_name, python_version, True)) + '\'',
     ]
 
 
-def build(file_name='main.py', production=False):
+def build(file_name, python_version, production):
     base = [
         'pyinstaller', '../' + file_name, '-y', '-n', output_name(),
         '--clean', '--onedir',
-        '--additional-hooks-dir', hooks_path(production=production),
-        '--runtime-hook', hooks_path(production=production) + '/unbuffered.py',
+        '--additional-hooks-dir', hooks_path(python_version, production),
+        '--runtime-hook',
+        hooks_path(python_version, production) + '/unbuffered.py',
         '--hidden-import', 'htmlentitydefs',
         '--hidden-import', 'HTMLParser',
         '--hidden-import', 'Cookie',
@@ -74,27 +94,27 @@ def build(file_name='main.py', production=False):
     return base
 
 
-def build_cmd(file_name='main.py', production=False):
+def build_cmd(file_name, python_version, production):
     if production:
-        return build_in_docker(file_name=file_name)
-    return build(file_name=file_name)
+        return build_in_docker(file_name, python_version)
+    return build(file_name, python_version, production)
 
 
-def build_function(function_name, file_name='main.py', trigger_type='http',
-                   production=False):
+def build_function(function_name, file_name,
+                   trigger_type, python_version, production):
     exit_code = subprocess.call(
-        ' '.join(build_cmd(file_name=file_name, production=production)),
+        ' '.join(build_cmd(file_name, python_version, production)),
         stdout=sys.stdout,
         stdin=sys.stdin,
         shell=True)
     if exit_code == 0:
-        build_javascript(function_name, trigger_type=trigger_type)
+        build_javascript(function_name, trigger_type)
     else:
         sys.exit(exit_code)
     sys.exit(cleanup())
 
 
-def build_javascript(function_name, trigger_type='http'):
+def build_javascript(function_name, trigger_type):
     js = open(package_root() + 'template/index.js').read()
     t = Template(js)
     rendered_js = t.render(config={
@@ -126,8 +146,15 @@ def main():
                         help='Build function for production environment')
     parser.add_argument('-f', '--file_name', type=str, default='main.py',
                         help='The file name of the file you wish to build')
+    parser.add_argument('--python_version', type=int, default=2,
+                        help='The python version you are targeting, '
+                        'only applies when building for production',
+                        choices=[2, 3])
 
     args = parser.parse_args()
     build_function(args.function_name,
-                   production=args.production,
-                   trigger_type=args.trigger_type, file_name=args.file_name)
+                   args.file_name,
+                   args.trigger_type,
+                   args.python_version,
+                   args.production,
+                   )
