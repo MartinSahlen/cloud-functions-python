@@ -2,7 +2,7 @@ import subprocess
 import os
 import sys
 import argparse
-from django.template import Template, Context
+from jinja2 import Template
 
 
 def package_root():
@@ -11,12 +11,8 @@ def package_root():
 
 def hooks_path(python_version, production):
     if production:
-        if python_version == 3:
-            return cache_dir(python_version) + \
-                '/lib/python3.5/site-packages/cloudfn/hooks'
-        if python_version == 2:
-            return cache_dir(python_version) + \
-                '/lib/python2.7/site-packages/cloudfn/hooks'
+        return cache_dir(python_version) + \
+            '/lib/python' + python_version + '/site-packages/cloudfn/hooks'
     return package_root() + 'hooks'
 
 
@@ -44,11 +40,11 @@ def get_django_settings():
 
 
 def dockerfile(python_version):
-    if python_version == 2:
-        return 'DockerfilePython2'
-    if python_version == 3:
-        return 'DockerfilePython3'
-    raise Exception('Python version not supported: ' + str(python_version))
+    return 'DockerfilePython' + python_version.replace('.', '-')
+
+
+def pip_prefix(python_version):
+    return 'python' + python_version + ' -m '
 
 
 def build_in_docker(file_name, python_version):
@@ -61,7 +57,8 @@ def build_in_docker(file_name, python_version):
         '&& test -d ' + cache_dir(python_version) + ' || virtualenv ' +
         cache_dir(python_version) + ' ' +
         '&& . ' + cache_dir(python_version) + '/bin/activate && ' +
-        'test -f ../requirements.txt && pip install -r ../requirements.txt ' +
+        'test -f ../requirements.txt && ' + pip_prefix(python_version) +
+        'pip install -r ../requirements.txt ' +
         '|| echo no requirements.txt present && ' +
         get_django_settings() + ' ' +
         ' '.join(build(file_name, python_version, True)) + '\'',
@@ -78,6 +75,8 @@ def build(file_name, python_version, production):
         '--hidden-import', 'htmlentitydefs',
         '--hidden-import', 'HTMLParser',
         '--hidden-import', 'Cookie',
+        '--exclude-module', 'jinja2.asyncsupport',
+        '--exclude-module', 'jinja2.asyncfilters',
     ]
     prefix = ''
     if os.path.isdir(prefix + './cloudfn-hooks'):
@@ -117,11 +116,11 @@ def build_function(function_name, file_name,
 def build_javascript(function_name, trigger_type):
     js = open(package_root() + 'template/index.js').read()
     t = Template(js)
-    rendered_js = t.render(Context({
+    rendered_js = t.render(config={
             'output_name': output_name(),
             'function_name': function_name,
             'trigger_http': trigger_type == 'http',
-        })
+        }
     )
     open('cloudfn/index.js', 'w').write(rendered_js)
 
@@ -146,10 +145,10 @@ def main():
                         help='Build function for production environment')
     parser.add_argument('-f', '--file_name', type=str, default='main.py',
                         help='The file name of the file you wish to build')
-    parser.add_argument('--python_version', type=int, default=2,
+    parser.add_argument('--python_version', type=str, default='2.7',
                         help='The python version you are targeting, '
                         'only applies when building for production',
-                        choices=[2, 3])
+                        choices=['2.7', '3.5'])
 
     args = parser.parse_args()
     build_function(args.function_name,
