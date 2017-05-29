@@ -1,7 +1,7 @@
 FROM ubuntu:17.10
 # Update
 RUN apt-get update
-RUN apt-get install -y python
+RUN apt-get install -y python2.7
 RUN apt-get install -y python-pip
 
 # Install app dependencies

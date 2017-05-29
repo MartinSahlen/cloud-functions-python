@@ -11,7 +11,7 @@ def package_root():
 
 def hooks_path(production=False):
     if production:
-        return 'pip-cache/lib/python2.7/site-packages/cloudfn/hooks'
+        return 'pip-cache/lib/python3.5/site-packages/cloudfn/hooks'
     return package_root() + 'hooks'
 
 
@@ -36,7 +36,7 @@ def get_django_settings():
 
 def build_in_docker(file_name='main.py'):
     return [
-        'docker', 'build', '-f', docker_path() + 'Dockerfile',
+        'docker', 'build', '-f', docker_path() + 'DockerfilePython3',
         '-t', image_name(), docker_path(), '&&', 'docker', 'run',
         '--rm', '-ti', '-v', '$(pwd):/app', image_name(), '/bin/sh', '-c',
         '\'cd app && test -d cloudfn || mkdir cloudfn && cd cloudfn '
