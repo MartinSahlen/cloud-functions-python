@@ -9,14 +9,23 @@ def package_root():
     return os.path.dirname(__file__) + '/'
 
 
-def hooks_path(production=False):
+def hooks_path(production=False, python_version=2):
     if production:
-        return 'pip-cache/lib/python3.5/site-packages/cloudfn/hooks'
+        if python_version == 3:
+            return cache_dir(python_version) + \
+                '/lib/python3.5/site-packages/cloudfn/hooks'
+        if python_version == 2:
+            return cache_dir(python_version) + \
+                '/lib/python2.7/site-packages/cloudfn/hooks'
     return package_root() + 'hooks'
 
 
-def image_name():
-    return 'pycloudfn-builder'
+def cache_dir(python_version):
+    return 'pip-cache-' + str(python_version)
+
+
+def image_name(python_version):
+    return 'pycloudfn-builder' + str(python_version)
 
 
 def docker_path():
@@ -34,14 +43,24 @@ def get_django_settings():
     return 'DJANGO_SETTINGS_MODULE='+m
 
 
-def build_in_docker(file_name='main.py'):
+def dockerfile(python_version):
+    if python_version == 2:
+        return 'Dockerfile'
+    if python_version == 3:
+        return 'DockerfilePython3'
+    raise Exception('Python version not supported: ' + str(python_version))
+
+
+def build_in_docker(file_name='main.py', python_version=2):
     return [
-        'docker', 'build', '-f', docker_path() + 'DockerfilePython3',
-        '-t', image_name(), docker_path(), '&&', 'docker', 'run',
-        '--rm', '-ti', '-v', '$(pwd):/app', image_name(), '/bin/sh', '-c',
+        'docker', 'build', '-f', docker_path() + dockerfile(python_version),
+        '-t', image_name(python_version), docker_path(), '&&', 'docker', 'run',
+        '--rm', '-ti', '-v', '$(pwd):/app', image_name(python_version),
+        '/bin/sh', '-c',
         '\'cd app && test -d cloudfn || mkdir cloudfn && cd cloudfn '
-        '&& test -d pip-cache || virtualenv pip-cache ' +
-        '&& . pip-cache/bin/activate && ' +
+        '&& test -d ' + cache_dir(python_version) + ' || virtualenv ' +
+        cache_dir(python_version) + ' ' +
+        '&& . ' + cache_dir(python_version) + '/bin/activate && ' +
         'test -f ../requirements.txt && pip install -r ../requirements.txt ' +
         '|| echo no requirements.txt present && ' +
         get_django_settings() + ' ' +
@@ -74,16 +93,21 @@ def build(file_name='main.py', production=False):
     return base
 
 
-def build_cmd(file_name='main.py', production=False):
+def build_cmd(file_name='main.py', python_version=2, production=False):
     if production:
-        return build_in_docker(file_name=file_name)
+        return build_in_docker(
+            file_name=file_name,
+            python_version=python_version)
     return build(file_name=file_name)
 
 
 def build_function(function_name, file_name='main.py', trigger_type='http',
+                   python_version=2,
                    production=False):
     exit_code = subprocess.call(
-        ' '.join(build_cmd(file_name=file_name, production=production)),
+        ' '.join(build_cmd(file_name=file_name,
+                           python_version=python_version,
+                           production=production)),
         stdout=sys.stdout,
         stdin=sys.stdin,
         shell=True)
@@ -126,8 +150,13 @@ def main():
                         help='Build function for production environment')
     parser.add_argument('-f', '--file_name', type=str, default='main.py',
                         help='The file name of the file you wish to build')
+    parser.add_argument('--python_version', type=int, default=2,
+                        help='The python version you are targeting',
+                        choices=[2, 3])
 
     args = parser.parse_args()
     build_function(args.function_name,
                    production=args.production,
-                   trigger_type=args.trigger_type, file_name=args.file_name)
+                   trigger_type=args.trigger_type,
+                   python_version=args.python_version,
+                   file_name=args.file_name)
