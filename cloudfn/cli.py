@@ -176,7 +176,7 @@ def run_build_cmd(cmd, stdout, stderr):
     return (p, output)
 
 
-@make_spin(Default, 'Generating javascript')
+@make_spin(Default, 'Generating javascript...')
 def build_javascript(function_name, trigger_type):
     js = open(package_root() + 'template/index.js').read()
     t = Template(js)
@@ -189,7 +189,7 @@ def build_javascript(function_name, trigger_type):
     open('cloudfn/index.js', 'w').write(rendered_js)
 
 
-@make_spin(Default, 'Cleaning up')
+@make_spin(Default, 'Cleaning up...')
 def cleanup():
     p = subprocess.Popen(
         'cd cloudfn && rm -rf target && mkdir target && mv index.js target ' +
