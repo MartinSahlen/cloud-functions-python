@@ -2,7 +2,7 @@ import subprocess
 import os
 import sys
 import argparse
-from jinja2 import Template
+from django.template import Template, Context
 
 
 def package_root():
@@ -117,11 +117,11 @@ def build_function(function_name, file_name,
 def build_javascript(function_name, trigger_type):
     js = open(package_root() + 'template/index.js').read()
     t = Template(js)
-    rendered_js = t.render(config={
+    rendered_js = t.render(Context({
             'output_name': output_name(),
             'function_name': function_name,
             'trigger_http': trigger_type == 'http',
-        }
+        })
     )
     open('cloudfn/index.js', 'w').write(rendered_js)
 
