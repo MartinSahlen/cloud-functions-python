@@ -1,4 +1,5 @@
 from cloudfn.storage import handle_bucket_event
+import jsonpickle
 
 
 def bucket_handler(obj):
