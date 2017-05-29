@@ -214,6 +214,9 @@ handle_pubsub_event(pubsub_handler)
 ## Deploying a function
 I have previously built [go-cloud-fn](https://github.com/MartinSahlen/go-cloud-fn/), in which there is a complete CLI available for you to deploy a function. I did not want to go there now, but rather be concerned about `building` the function and be super light weight. Deploying a function can be done like this:
 
+(If you have the [emulator](https://github.com/GoogleCloudPlatform/cloud-functions-emulator) installed,
+just swap `gcloud beta functions` with `functions` and you are golden!).
+
 ### HTTP
 
 ```sh
