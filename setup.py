@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='pycloudfn',
-    version='0.1.147',
+    version='0.1.148',
     description='GCP Cloud functions in python',
     url='https://github.com/MartinSahlen/cloud-functions-python',
     author='Martin Sahlen',
