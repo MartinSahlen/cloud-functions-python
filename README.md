@@ -24,7 +24,32 @@ You also need **Docker** installed and running as well as the **gcloud** CLI. Do
 
 Currently, only `http`, `pubsub` and `bucket` events are supported.
 
+
+
 # Usage
+
+## CLI
+
+```
+usage: py-cloud-fn [-h] [-p] [-f FILE_NAME] [--python_version {2,3}]
+                   function_name {http,pubsub,bucket}
+
+Build a GCP Cloud Function in python.
+
+positional arguments:
+  function_name         the name of your cloud function
+  {http,pubsub,bucket}  the trigger type of your cloud function
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -p, --production      Build function for production environment
+  -f FILE_NAME, --file_name FILE_NAME
+                        The file name of the file you wish to build
+  --python_version {2,3}
+                        The python version you are targeting, only applies
+                        when building for production
+```
+
 Usage is meant to be pretty idiomatic:
 
 Run `py-cloud-fn <function_name> <trigger_type>` to build your finished function.

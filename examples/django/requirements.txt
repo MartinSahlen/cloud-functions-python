@@ -1,3 +1,3 @@
 django==1.11
-pycloudfn==0.1.153
+pycloudfn==0.1.156
 djangorestframework==3.6.3
