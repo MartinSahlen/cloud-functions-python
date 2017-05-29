@@ -1,8 +1,13 @@
+from __future__ import print_function
 import subprocess
 import os
 import sys
 import argparse
 from jinja2 import Template
+from datetime import datetime
+import json
+from pyspin.spin import make_spin, Default
+import emoji
 
 
 def package_root():
@@ -99,20 +104,69 @@ def build_cmd(file_name, python_version, production):
     return build(file_name, python_version, production)
 
 
-def build_function(function_name, file_name,
-                   trigger_type, python_version, production):
-    exit_code = subprocess.call(
+def log(statement):
+    d = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print(d + ': ' + statement)
+
+
+def build_function(
+    function_name,
+    file_name,
+    trigger_type,
+    python_version,
+    production,
+        verbose):
+
+    build_config = {
+        'function_name': function_name,
+        'file_name': file_name,
+        'trigger_type': trigger_type,
+        'python_version': python_version,
+        'production': production,
+    }
+
+    log('Config: \n' +
+        json.dumps(build_config, indent=4))
+
+    stdout = subprocess.PIPE
+    stderr = subprocess.STDOUT
+    if verbose:
+        stdout = sys.stdout
+        stderr = sys.stderr
+
+    (p, output) = run_build_cmd(
         ' '.join(build_cmd(file_name, python_version, production)),
-        stdout=sys.stdout,
-        stdin=sys.stdin,
-        shell=True)
-    if exit_code == 0:
+        stdout,
+        stderr)
+    if p.returncode == 0:
         build_javascript(function_name, trigger_type)
     else:
-        sys.exit(exit_code)
-    sys.exit(cleanup())
+        log('Build failed!'
+            'See the build output below for what might have went wrong:')
+        print(output[0])
+        sys.exit(p.returncode)
+    (c, co) = cleanup()
+    if c.returncode == 0:
+        log('Success! Your function can now be deployed from '
+            './cloudfn/target/')
+    else:
+        log('Something went wrong when cleaning up: ' + co[0])
+        sys.exit(c.returncode)
 
 
+@make_spin(Default, emoji.emojize('Building :wrench:') +
+           emoji.emojize(', go grab a :coffee:'))
+def run_build_cmd(cmd, stdout, stderr):
+    p = subprocess.Popen(
+        cmd,
+        stdout=stdout,
+        stderr=stderr,
+        shell=True)
+    output = p.communicate()
+    return (p, output)
+
+
+@make_spin(Default, u'Generating javascript')
 def build_javascript(function_name, trigger_type):
     js = open(package_root() + 'template/index.js').read()
     t = Template(js)
@@ -125,11 +179,16 @@ def build_javascript(function_name, trigger_type):
     open('cloudfn/index.js', 'w').write(rendered_js)
 
 
+@make_spin(Default, u'Cleaning up')
 def cleanup():
-    return subprocess.call(
+    p = subprocess.Popen(
         'cd cloudfn && rm -rf target && mkdir target && mv index.js target ' +
         '&& mv dist target',
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
         shell=True)
+    output = p.communicate()
+    return (p, output)
 
 
 def main():
@@ -149,6 +208,9 @@ def main():
                         help='The python version you are targeting, '
                         'only applies when building for production',
                         choices=['2.7', '3.5'])
+    parser.add_argument('-v', '--verbose', action='store_true',
+                        help='Build in verbose mode '
+                        'showing full build output')
 
     args = parser.parse_args()
     build_function(args.function_name,
@@ -156,4 +218,5 @@ def main():
                    args.trigger_type,
                    args.python_version,
                    args.production,
+                   args.verbose,
                    )
