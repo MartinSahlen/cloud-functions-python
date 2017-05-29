@@ -1,7 +1,9 @@
 [![PyPI version](https://badge.fury.io/py/pycloudfn.svg)](https://badge.fury.io/py/pycloudfn)
 
 # cloud-functions-python
-`py-cloud-fn` is a CLI tool that allows you to write and deploy [Google cloud functions](https://cloud.google.com/functions/) in pure python. No javascript allowed!
+`py-cloud-fn` is a CLI tool that allows you to write and deploy [Google cloud functions](https://cloud.google.com/functions/) in pure python, supporting python 2.7 and 3.5
+(thanks to @MitalAshok for helping on the code compatibility). 
+No javascript allowed!
 The goal of this library is to be able to let developers write light weight functions
 in idiomatic python without needing to worry about node.js. It works OOTB with [pip](https://pypi.python.org/pypi),
 just include a file named `requirements.txt` that is structured like this:
@@ -20,11 +22,9 @@ You need to have [Google cloud SDK](https://cloud.google.com/sdk/downloads) inst
 the [Cloud functions emulator](https://github.com/GoogleCloudPlatform/cloud-functions-emulator/).
 Currently the emulator does not seem to work though :(
 
-You also need **Docker** installed and running as well as the **gcloud** CLI. Docker is needed to build for the production environment, regardless of you local development environment. It's only tested on my mac and currently only for python 2.7. It should be not too difficult to make it work with python 3, pull requests welcome!
+You also need **Docker** installed and running as well as the **gcloud** CLI. Docker is needed to build for the production environment, regardless of you local development environment.
 
-Currently, only `http`, `pubsub` and `bucket` events are supported.
-
-
+Currently, `http`, `pubsub` and `bucket` events are supported (no firebase).
 
 # Usage
 
