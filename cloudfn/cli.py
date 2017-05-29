@@ -4,10 +4,8 @@ import os
 import sys
 import argparse
 from jinja2 import Template
-from datetime import datetime
-import json
 from pyspin.spin import make_spin, Default
-import emoji
+import time
 
 
 def package_root():
@@ -104,11 +102,6 @@ def build_cmd(file_name, python_version, production):
     return build(file_name, python_version, production)
 
 
-def log(statement):
-    d = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    print(d + ': ' + statement)
-
-
 def build_function(
     function_name,
     file_name,
@@ -117,16 +110,31 @@ def build_function(
     production,
         verbose):
 
-    build_config = {
-        'function_name': function_name,
-        'file_name': file_name,
-        'trigger_type': trigger_type,
-        'python_version': python_version,
-        'production': production,
-    }
+    start = time.time()
 
-    log('Config: \n' +
-        json.dumps(build_config, indent=4))
+    print('''
+  _____                  _                 _         __
+ |  __ \                | |               | |       / _|
+ | |__) |   _ ______ ___| | ___  _   _  __| |______| |_ _ __
+ |  ___/ | | |______/ __| |/ _ \| | | |/ _` |______|  _| '_ \\
+ | |   | |_| |     | (__| | (_) | |_| | (_| |      | | | | | |
+ |_|    \__, |      \___|_|\___/ \__,_|\__,_|      |_| |_| |_|
+         __/ |
+        |___/
+''')
+    print('''Function: {function_name}
+File: {file_name}
+Trigger: {trigger_type}
+Python version: {python_version}
+Production: {production}
+    '''.format(
+        function_name=function_name,
+        file_name=file_name,
+        trigger_type=trigger_type,
+        python_version=python_version,
+        production=production,
+        )
+    )
 
     stdout = subprocess.PIPE
     stderr = subprocess.STDOUT
@@ -141,21 +149,23 @@ def build_function(
     if p.returncode == 0:
         build_javascript(function_name, trigger_type)
     else:
-        log('Build failed!'
-            'See the build output below for what might have went wrong:')
+        print('\nBuild failed!'
+              'See the build output below for what might have went wrong:')
         print(output[0])
         sys.exit(p.returncode)
     (c, co) = cleanup()
     if c.returncode == 0:
-        log('Success! Your function can now be deployed from '
-            './cloudfn/target/')
+        end = time.time()
+        print('''
+Elapsed time: {elapsed}s
+Output: ./cloudfn/target/index.js
+'''.format(elapsed=round((end - start), 1)))
     else:
-        log('Something went wrong when cleaning up: ' + co[0])
+        print('\nSomething went wrong when cleaning up: ' + co[0])
         sys.exit(c.returncode)
 
 
-@make_spin(Default, emoji.emojize('Building :wrench:') +
-           emoji.emojize(', go grab a :coffee:'))
+@make_spin(Default, 'Building, go grab a coffee...')
 def run_build_cmd(cmd, stdout, stderr):
     p = subprocess.Popen(
         cmd,
@@ -166,7 +176,7 @@ def run_build_cmd(cmd, stdout, stderr):
     return (p, output)
 
 
-@make_spin(Default, u'Generating javascript')
+@make_spin(Default, 'Generating javascript')
 def build_javascript(function_name, trigger_type):
     js = open(package_root() + 'template/index.js').read()
     t = Template(js)
@@ -179,7 +189,7 @@ def build_javascript(function_name, trigger_type):
     open('cloudfn/index.js', 'w').write(rendered_js)
 
 
-@make_spin(Default, u'Cleaning up')
+@make_spin(Default, 'Cleaning up')
 def cleanup():
     p = subprocess.Popen(
         'cd cloudfn && rm -rf target && mkdir target && mv index.js target ' +
