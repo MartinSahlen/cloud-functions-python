@@ -2,7 +2,7 @@
 
 # cloud-functions-python
 `py-cloud-fn` is a CLI tool that allows you to write and deploy [Google cloud functions](https://cloud.google.com/functions/) in pure python, supporting python 2.7 and 3.5
-(thanks to @MitalAshok for helping on the code compatibility). 
+(thanks to @MitalAshok for helping on the code compatibility).
 No javascript allowed!
 The goal of this library is to be able to let developers write light weight functions
 in idiomatic python without needing to worry about node.js. It works OOTB with [pip](https://pypi.python.org/pypi),
@@ -16,6 +16,8 @@ jsonpickle==0.9.4
 as you normally would when building any python application. When building (for production), the library
 will pick up this file and make sure to install the dependencies. It will do so while caching all dependencies
 in a [virtual environment](https://virtualenv.pypa.io/en/stable/), to speed up subsequent builds.
+
+TLDR, look at the [examples](https://github.com/MartinSahlen/cloud-functions-python/tree/master/examples)
 
 Run `pip install pycloudfn` to get it.
 You need to have [Google cloud SDK](https://cloud.google.com/sdk/downloads) installed, as well as
@@ -31,7 +33,7 @@ Currently, `http`, `pubsub` and `bucket` events are supported (no firebase).
 ## CLI
 
 ```
-usage: py-cloud-fn [-h] [-p] [-f FILE_NAME] [--python_version {2,3}]
+usage: py-cloud-fn [-h] [-p] [-f FILE_NAME] [--python_version {2.7,3.5,3.6}]
                    function_name {http,pubsub,bucket}
 
 Build a GCP Cloud Function in python.
@@ -45,7 +47,7 @@ optional arguments:
   -p, --production      Build function for production environment
   -f FILE_NAME, --file_name FILE_NAME
                         The file name of the file you wish to build
-  --python_version {2,3}
+  --python_version {2.7,3.5}
                         The python version you are targeting, only applies
                         when building for production
 ```
