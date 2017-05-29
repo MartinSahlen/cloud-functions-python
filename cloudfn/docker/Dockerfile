@@ -3,7 +3,6 @@ FROM ubuntu
 RUN apt-get update
 RUN apt-get install -y python
 RUN apt-get install -y python-pip
-RUN apt-get install -y curl
 
 # Install app dependencies
 RUN pip install pip==9.0.1
