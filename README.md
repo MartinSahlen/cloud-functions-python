@@ -59,6 +59,33 @@ Run with `-h` to get some guidance on options. The library will assume that you 
 
 The library will create a `cloudfn` folder wherever it is used, which can safely be put in `.gitignore`. It contains build files and cache for python packages.
 
+```
+$DJANGO_SETTINGS_MODULE=mysite.settings py-cloud-fn my-function http -f function.py --python_version 3.5
+
+  _____                  _                 _         __
+ |  __ \                | |               | |       / _|
+ | |__) |   _ ______ ___| | ___  _   _  __| |______| |_ _ __
+ |  ___/ | | |______/ __| |/ _ \| | | |/ _` |______|  _| '_ \
+ | |   | |_| |     | (__| | (_) | |_| | (_| |      | | | | | |
+ |_|    \__, |      \___|_|\___/ \__,_|\__,_|      |_| |_| |_|
+         __/ |
+        |___/
+
+Function: my-function
+File: function.py
+Trigger: http
+Python version: 3.5
+Production: False
+
+⠴    Building, go grab a coffee...
+⠋    Generating javascript...
+⠼    Cleaning up...
+
+Elapsed time: 37.6s
+Output: ./cloudfn/target/index.js
+
+```
+
 ## Dependencies
 This library works with [pip](https://pypi.python.org/pypi) OOTB. Just add your `requirements.txt` file in the root
 of the repo and you are golden. It obviously needs `pycloudfn` to be present.
