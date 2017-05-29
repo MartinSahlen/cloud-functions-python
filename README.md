@@ -246,6 +246,14 @@ gcloud beta functions deploy my-topic-function --trigger-topic <topic> \
 in the root of your repo, see more at [Pyinstaller](https://pyinstaller.readthedocs.io/en/stable/hooks.html) for how it works. Check out [this](https://github.com/MartinSahlen/cloud-functions-python/blob/master/cloudfn/hooks)
 for how to add hooks.
 
+### Troubleshooting
+
+When things blow up, the first thing to try is to delete the `cloudfn` cache
+folder. Things might go a bit haywire when builds are interrupted or other
+circumstances. It just might save the day! Please get in touch at twitter if
+you bump into anything: @MartinSahlen
+
+
 ## License
 
 Copyright © 2017 Martin Sahlen
