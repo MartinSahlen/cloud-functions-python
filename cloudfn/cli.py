@@ -11,12 +11,8 @@ def package_root():
 
 def hooks_path(python_version, production):
     if production:
-        if python_version == '3.5':
-            return cache_dir(python_version) + \
-                '/lib/python3.5/site-packages/cloudfn/hooks'
-        if python_version == '2.7':
-            return cache_dir(python_version) + \
-                '/lib/python2.7/site-packages/cloudfn/hooks'
+        return cache_dir(python_version) + \
+            '/lib/python' + python_version + '/site-packages/cloudfn/hooks'
     return package_root() + 'hooks'
 
 
