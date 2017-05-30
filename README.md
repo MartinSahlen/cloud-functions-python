@@ -21,8 +21,8 @@ TLDR, look at the [examples](https://github.com/MartinSahlen/cloud-functions-pyt
 
 Run `pip install pycloudfn` to get it.
 You need to have [Google cloud SDK](https://cloud.google.com/sdk/downloads) installed, as well as
-the [Cloud functions emulator](https://github.com/GoogleCloudPlatform/cloud-functions-emulator/).
-Currently the emulator does not seem to work though :(
+the [Cloud functions emulator](https://github.com/GoogleCloudPlatform/cloud-functions-emulator/) and `npm` if you want to
+test your function locally.
 
 You also need **Docker** installed and running as well as the **gcloud** CLI. Docker is needed to build for the production environment, regardless of you local development environment.
 
@@ -228,7 +228,7 @@ handle_pubsub_event(pubsub_handler)
 I have previously built [go-cloud-fn](https://github.com/MartinSahlen/go-cloud-fn/), in which there is a complete CLI available for you to deploy a function. I did not want to go there now, but rather be concerned about `building` the function and be super light weight. Deploying a function can be done like this:
 
 (If you have the [emulator](https://github.com/GoogleCloudPlatform/cloud-functions-emulator) installed,
-just swap `gcloud beta functions` with `functions` and you are golden!).
+just swap `gcloud beta functions` with `npm install && functions` and you are golden!).
 
 ### HTTP
 
