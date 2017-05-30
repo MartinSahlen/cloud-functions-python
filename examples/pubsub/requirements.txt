@@ -1,2 +1,2 @@
-pycloudfn==0.1.199
+pycloudfn==0.1.205
 jsonpickle==0.9.4

@@ -1,34 +1,42 @@
+var googleAuth = require('google-auto-auth')();
 //Handle Background events according to spec
 function shimHandler(data) {
   return new Promise((resolve, reject) => {
-    //Spawn the function and inject the env from the parent process.
-    const p = require('child_process').execFile('./dist/{{config["output_name"]}}/{{config["output_name"]}}', {
-      env: process.env,
-    });
-    var lastMessage;
-    p.stdin.setEncoding('utf-8');
-    //Log standard err messages to standard err
-    p.stderr.on('data', (err) => {
-      console.error(err.toString());
-    })
-    p.stdout.on('data', (out) => {
-      console.log(out.toString());
-      lastMessage = out;
-    })
-    p.on('close', (code) => {
-      if (code !== 0) {
-        //This means the shim failed / panicked. So we reject hard.
-        reject();
+    googleAuth.getToken(function (err, oauthToken) {
+      if (err) {
+        reject()
       } else {
-        // Resolve the promise with the latest output from stdout
-        // In case of shimming http, this is the response object.
-        resolve(lastMessage);
+        const p = require('child_process').execFile('./dist/{{config["output_name"]}}/{{config["output_name"]}}', {
+          env: Object.assign(process.env, {
+            'GOOGLE_OAUTH_TOKEN': oauthToken,
+          })
+        });
+        var lastMessage;
+        p.stdin.setEncoding('utf-8');
+        //Log standard err messages to standard err
+        p.stderr.on('data', (err) => {
+          console.error(err.toString());
+        })
+        p.stdout.on('data', (out) => {
+          console.log(out.toString());
+          lastMessage = out;
+        })
+        p.on('close', (code) => {
+          if (code !== 0) {
+            //This means the shim failed / panicked. So we reject hard.
+            reject();
+          } else {
+            // Resolve the promise with the latest output from stdout
+            // In case of shimming http, this is the response object.
+            resolve(lastMessage);
+          }
+        });
+        //Write the object/message/request to the shim's stdin and signal
+        //End of input.
+        p.stdin.write(JSON.stringify(data));
+        p.stdin.end();
       }
     });
-    //Write the object/message/request to the shim's stdin and signal
-    //End of input.
-    p.stdin.write(JSON.stringify(data));
-    p.stdin.end();
   });
 }
 
