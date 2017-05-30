@@ -90,6 +90,19 @@ Output: ./cloudfn/target/index.js
 This library works with [pip](https://pypi.python.org/pypi) OOTB. Just add your `requirements.txt` file in the root
 of the repo and you are golden. It obviously needs `pycloudfn` to be present.
 
+## Autentication
+Since this is not really supported by google, there is one thing that needs to be done to
+make this work smoothly: You can't use the default clients directly. It's solvable though,
+just do
+
+```python
+from cloudfn.google_account import get_credentials
+
+biquery_client = bigquery.Client(credentials=get_credentials())
+```
+
+And everything is taken care of for you!! no more actions need be done.
+
 ### Handling a http request
 
 look at the [Request](https://github.com/MartinSahlen/cloud-functions-python/blob/master/cloudfn/http.py)
@@ -123,18 +136,18 @@ to see how easy it is!
 
 ```python
 from cloudfn.flask_handler import handle_http_event
+from cloudfn.google_account import get_credentials
 from flask import Flask, request
 from flask.json import jsonify
 from google.cloud import bigquery
 
-
 app = Flask('the-function')
-client = bigquery.Client()
+biquery_client = bigquery.Client(credentials=get_credentials())
 
 
 @app.route('/',  methods=['POST', 'GET'])
 def hello():
-    print request.args
+    print request.headers
     return jsonify(message='Hello world!', json=request.get_json()), 201
 
 
@@ -146,7 +159,7 @@ def helloLol():
 @app.route('/bigquery-datasets',  methods=['POST', 'GET'])
 def bigquery():
     datasets = []
-    for dataset in client.list_datasets():
+    for dataset in biquery_client.list_datasets():
         datasets.append(dataset.name)
     return jsonify(message='Hello world!', datasets={
         'datasets': datasets

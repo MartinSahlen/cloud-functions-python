@@ -187,13 +187,25 @@ def build_javascript(function_name, trigger_type):
         }
     )
     open('cloudfn/index.js', 'w').write(rendered_js)
+    open('cloudfn/package.json', 'w').write('''{
+  "name": "target",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "google-auto-auth": "^0.7.0"
+  }
+}
+        ''')
 
 
 @make_spin(Default, 'Cleaning up...')
 def cleanup():
     p = subprocess.Popen(
         'cd cloudfn && rm -rf target && mkdir target && mv index.js target ' +
-        '&& mv dist target',
+        '&& mv package.json target && mv dist target',
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         shell=True)
