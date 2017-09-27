@@ -9,7 +9,7 @@ in idiomatic python without needing to worry about node.js. It works OOTB with [
 just include a file named `requirements.txt` that is structured like this:
 
 ```
-pycloudfn==0.1.115
+pycloudfn
 jsonpickle==0.9.4
 ```
 
