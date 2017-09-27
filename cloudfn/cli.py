@@ -72,6 +72,7 @@ def build(file_name, python_version, production):
     base = [
         'pyinstaller', '../' + file_name, '-y', '-n', output_name(),
         '--clean', '--onedir',
+        '--paths', '../',
         '--additional-hooks-dir', hooks_path(python_version, production),
         '--runtime-hook',
         hooks_path(python_version, production) + '/unbuffered.py',
