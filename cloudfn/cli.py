@@ -51,10 +51,11 @@ def pip_prefix(python_version):
 
 
 def build_in_docker(file_name, python_version):
+    cwd = os.getcwd()
     return [
         'docker', 'build', '-f', docker_path() + dockerfile(python_version),
         '-t', image_name(python_version), docker_path(), '&&', 'docker', 'run',
-        '--rm', '-ti', '-v', '$(pwd):/app', image_name(python_version),
+        '--rm', '-ti', '-v', cwd + ':/app', image_name(python_version),
         '/bin/sh', '-c',
         '\'cd app && test -d cloudfn || mkdir cloudfn && cd cloudfn '
         '&& test -d ' + cache_dir(python_version) + ' || virtualenv ' +
