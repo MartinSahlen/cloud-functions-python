@@ -24,7 +24,7 @@ class ACL:
 
 class Object:
     __ATTRIBUTES = (
-        'kind', 'id', 'self_link', 'bucket', 'object', 'generation',
+        'kind', 'id', 'self_link', 'bucket', 'name', 'generation',
         'metageneration', 'content_type', 'time_created', 'updated',
         'time_deleted', 'storage_class', 'time_storage_class_updated', 'size',
         'md5_hash', 'media_link', 'content_encoding', 'content_disposition',
