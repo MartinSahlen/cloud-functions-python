@@ -90,7 +90,7 @@ Output: ./cloudfn/target/index.js
 This library works with [pip](https://pypi.python.org/pypi) OOTB. Just add your `requirements.txt` file in the root
 of the repo and you are golden. It obviously needs `pycloudfn` to be present.
 
-## Autentication
+## Authentication
 Since this is not really supported by google, there is one thing that needs to be done to
 make this work smoothly: You can't use the default clients directly. It's solvable though,
 just do
@@ -101,11 +101,11 @@ from cloudfn.google_account import get_credentials
 biquery_client = bigquery.Client(credentials=get_credentials())
 ```
 
-And everything is taken care of for you!! no more actions need be done.
+And everything is taken care off for you!! no more actions need be done.
 
 ### Handling a http request
 
-look at the [Request](https://github.com/MartinSahlen/cloud-functions-python/blob/master/cloudfn/http.py)
+Look at the [Request](https://github.com/MartinSahlen/cloud-functions-python/blob/master/cloudfn/http.py)
 object for the structure
 
 ```python
@@ -209,7 +209,7 @@ handle_bucket_event(bucket_handler)
 
 ### Handling a pubsub message
 
-look at the [Message](https://github.com/MartinSahlen/cloud-functions-python/blob/master/cloudfn/pubsub.py)
+Look at the [Message](https://github.com/MartinSahlen/cloud-functions-python/blob/master/cloudfn/pubsub.py)
 for the structure, it follows the convention in the [Pubsub API](https://cloud.google.com/pubsub/docs/reference/rest/v1/PubsubMessage)
 
 ```python
@@ -254,7 +254,7 @@ gcloud beta functions deploy my-topic-function --trigger-topic <topic> \
 --stage-bucket <bucket> && cd ../..
 ```
 
-### Adding support for packages that doesnt work
+### Adding support for packages that do not work
 
 - Look at the build output for what might be wrong.
 - Look for what modules might be missing.
