@@ -45,6 +45,8 @@ positional arguments:
 optional arguments:
   -h, --help            show this help message and exit
   -p, --production      Build function for production environment
+  -i, --production_image
+                        Docker image to use for building production environment
   -f FILE_NAME, --file_name FILE_NAME
                         The file name of the file you wish to build
   --python_version {2.7,3.5}
