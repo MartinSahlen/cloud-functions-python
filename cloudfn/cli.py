@@ -50,15 +50,26 @@ def pip_prefix(python_version):
     return 'python' + python_version + ' -m '
 
 
-def build_in_docker(file_name, python_version):
+def build_in_docker(file_name, python_version, production_image):
     cwd = os.getcwd()
-    return [
+    cmds = []
+    if not production_image:
+        cmds = cmds + [
         'docker', 'build', '-f', docker_path() + dockerfile(python_version),
-        '-t', image_name(python_version), docker_path(), '&&', 'docker', 'run',
-        '--rm', '-ti', '-v', cwd + ':/app', image_name(python_version),
+        '-t', image_name(python_version), docker_path(), '&&']
+
+    cmds = cmds + ['docker', 'run', '--rm', '-ti', '-v', cwd + ':/app']
+
+    if production_image:
+        cmds.append(production_image)
+    else:
+        cmds.append(image_name(python_version))
+
+    cmds = cmds + [
         '/bin/sh', '-c',
-        '\'cd app && test -d cloudfn || mkdir cloudfn && cd cloudfn '
+        '\'cd /app && test -d cloudfn || mkdir cloudfn && cd cloudfn '
         '&& test -d ' + cache_dir(python_version) + ' || virtualenv ' +
+        ' -p python' + python_version + ' ' +
         cache_dir(python_version) + ' ' +
         '&& . ' + cache_dir(python_version) + '/bin/activate && ' +
         'test -f ../requirements.txt && ' + pip_prefix(python_version) +
@@ -67,6 +78,7 @@ def build_in_docker(file_name, python_version):
         get_django_settings() + ' ' +
         ' '.join(build(file_name, python_version, True)) + '\'',
     ]
+    return cmds
 
 
 def build(file_name, python_version, production):
@@ -98,9 +110,9 @@ def build(file_name, python_version, production):
     return base
 
 
-def build_cmd(file_name, python_version, production):
+def build_cmd(file_name, python_version, production, production_image):
     if production:
-        return build_in_docker(file_name, python_version)
+        return build_in_docker(file_name, python_version, production_image)
     return build(file_name, python_version, production)
 
 
@@ -110,7 +122,8 @@ def build_function(
     trigger_type,
     python_version,
     production,
-        verbose):
+    production_image,
+    verbose):
 
     start = time.time()
 
@@ -129,12 +142,14 @@ File: {file_name}
 Trigger: {trigger_type}
 Python version: {python_version}
 Production: {production}
+Production Image: {production_image}
     '''.format(
         function_name=function_name,
         file_name=file_name,
         trigger_type=trigger_type,
         python_version=python_version,
         production=production,
+        production_image=production_image,
         )
     )
 
@@ -145,7 +160,7 @@ Production: {production}
         stderr = sys.stderr
 
     (p, output) = run_build_cmd(
-        ' '.join(build_cmd(file_name, python_version, production)),
+        ' '.join(build_cmd(file_name, python_version, production, production_image)),
         stdout,
         stderr)
     if p.returncode == 0:
@@ -226,6 +241,8 @@ def main():
                         choices=['http', 'pubsub', 'bucket'])
     parser.add_argument('-p', '--production', action='store_true',
                         help='Build function for production environment')
+    parser.add_argument('-i', '--production_image', type=str,
+                        help='Docker image to use for building production environment')
     parser.add_argument('-f', '--file_name', type=str, default='main.py',
                         help='The file name of the file you wish to build')
     parser.add_argument('--python_version', type=str, default='2.7',
@@ -242,5 +259,6 @@ def main():
                    args.trigger_type,
                    args.python_version,
                    args.production,
+                   args.production_image,
                    args.verbose,
                    )
