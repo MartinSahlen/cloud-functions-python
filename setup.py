@@ -28,7 +28,7 @@ setup(
         'six==1.10.0',
         'Jinja2==2.9.6',
         'pyspin==1.1.1',
-        'google-auth==1.3.1',
+        'google-auth==1.3.0',
     ],
     include_package_data=True,
     packages=['cloudfn'],
