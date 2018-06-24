@@ -1,5 +1,7 @@
 [![PyPI version](https://badge.fury.io/py/pycloudfn.svg)](https://badge.fury.io/py/pycloudfn)
 
+[NOTE]: This is a highly experimental (and proof of concept) library so do not expect all python packages to work flawlessly. Also, cloud functions are now (Summer 2018) rolling out native support for python3 in EAP so that also might be an option, check out the #functions channel on googlecloud-community.slack.com where the product managers hang around and open to help you out!
+
 # cloud-functions-python
 `py-cloud-fn` is a CLI tool that allows you to write and deploy [Google cloud functions](https://cloud.google.com/functions/) in pure python, supporting python 2.7 and 3.5
 (thanks to @MitalAshok for helping on the code compatibility).
