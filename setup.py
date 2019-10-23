@@ -23,7 +23,7 @@ setup(
     install_requires=[
         'pyinstaller==3.3.1',
         'python-dateutil==2.6.0',
-        'werkzeug==0.12',
+        'werkzeug==0.15.3',
         'django==1.11.1',
         'six==1.10.0',
         'Jinja2==2.9.6',
