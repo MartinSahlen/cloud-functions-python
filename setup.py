@@ -24,7 +24,7 @@ setup(
         'pyinstaller==3.3.1',
         'python-dateutil==2.6.0',
         'werkzeug==0.12',
-        'django==1.11.1',
+        'django==1.11.28',
         'six==1.10.0',
         'Jinja2==2.9.6',
         'pyspin==1.1.1',
