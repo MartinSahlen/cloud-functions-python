@@ -26,7 +26,7 @@ setup(
         'werkzeug==0.12',
         'django==1.11.1',
         'six==1.10.0',
-        'Jinja2==2.9.6',
+        'Jinja2==2.11.3',
         'pyspin==1.1.1',
         'google-auth==1.3.0',
     ],
